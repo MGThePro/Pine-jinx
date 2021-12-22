@@ -9,10 +9,13 @@ The purpose of the installer is to place Ryujinx inside ~/.local/share/Ryujinx, 
 
 Usage:
 Open a terminal, paste <br>
-`bash -c "$(curl -s https://raw.githubusercontent.com/edisionnano/Pine-jinx/main/pinejinx.sh)"` <br>
+`bash -c "$(curl -s https://raw.githubusercontent.com/edisionnano/Pine-jinx/testing/pinejinx.sh)"` <br>
 and hit enter
 
 ## Note
 This installs the latest master build, to get LDN use</br>
 `bash -c "$(curl -s https://raw.githubusercontent.com/edisionnano/Pine-jinx/LDN/pinejinx.sh)"`
 </br>LDN is installed at a different location so that you can have both together at the same time.
+<br>For the re-nice feature to work you need to run these two terminal commands:
+<br>`sudo groupadd gamemode`
+<br>`sudo usermod -a -G gamemode $USER`
