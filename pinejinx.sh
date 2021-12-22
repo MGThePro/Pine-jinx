@@ -16,7 +16,6 @@ getoptions() {
 		read -p "Do you want to use it? [y/N]: " mesanoerror
 	fi
 	read -p "Do you want to disable the console window? [y/N]: " console
-	arg="$arg2$arg3$arg1"
 	read -p "Do you want PineJinx to setup an alias for ryujinx? [y/N]: " alias
 }
 makealias() {
@@ -67,7 +66,39 @@ install() {
 	curl -L "https://raw.githubusercontent.com/edisionnano/Pine-jinx/main/Ryujinx.desktop" > Ryujinx.desktop
 	curl -L "https://raw.githubusercontent.com/edisionnano/Pine-jinx/main/Ryujinx.png" > Ryujinx.png
 	curl -L "https://raw.githubusercontent.com/edisionnano/Pine-jinx/main/Ryujinx.xml" > Ryujinx.xml
-	#Desktop entries do not accept relative paths so the user's name must be in the file
+	if [ "$noconfirm" = "1" ]; then
+		:
+	else
+		getoptions
+	fi
+	if [ "$gamemode" = "y" ] || [ "$gamemode" = "Y" ]; then
+		arg1="gamemoderun "
+		curl -L "https://raw.githubusercontent.com/edisionnano/Pine-jinx/testing/gamemode.ini" > /home/${USER}/.config/gamemode.ini
+	else
+		arg1=""
+	fi
+	if [ "$gpuopt" = "1" ]; then
+		arg2='__GL_THREADED_OPTIMIZATIONS=0 __GL_SYNC_TO_VBLANK=0 '
+	elif [ "$gpuopt" = "2" ]; then
+		arg2="AMD_DEBUG=w32ge,w32ps,w32cs,nohyperz,nofmask glsl_zero_init=true radeonsi_clamp_div_by_zero=true force_integer_tex_nearest=true mesa_glthread=false vblank_mode=0 "
+		if [ "$mesanoerror" = "y" ] || [ "$mesanoerror" = "Y" ]; then
+            arg3="MESA_NO_ERROR=1 "
+        else
+            arg3=""
+        fi
+	else
+		arg2=''
+	fi
+	arg="$arg2$arg3$arg1"
+	if [ "$console" = "y" ] || [ "$console" = "Y" ]; then
+		sed -i "s/Terminal=true/Terminal=false/g" Ryujinx.desktop
+	fi
+	if [ "$alias" = "y" ] || [ "$alias" = "Y" ]; then
+		makealias
+	else
+		:
+	fi
+    #Desktop entries do not accept relative paths so the user's name must be in the file
 	sed -i "s/dummy/${USER}/g" Ryujinx.desktop
 	#Append any optimizations
 	sed -i "s/x11/x11 ${arg}/" Ryujinx.desktop
@@ -83,37 +114,6 @@ install() {
 	update-mime-database /home/${USER}/.local/share/mime
 	#Update the application database
 	update-desktop-database /home/${USER}/.local/share/applications
-	if [ "$noconfirm" = "1" ]; then
-		:
-	else
-		getoptions
-	fi
-	if [ "$gamemode" = "y" ] || [ "$gamemode" = "Y" ]; then
-		arg1="gamemoderun "
-		curl -L "https://raw.githubusercontent.com/edisionnano/Pine-jinx/testing/gamemode.ini" > /home/${USER}/.config/gamemode.ini
-	else
-		arg1=""
-	fi
-	if [ "$gpuopt" = "1" ]; then
-		arg2='env __GL_THREADED_OPTIMIZATIONS=0 __GL_SYNC_TO_VBLANK=0 '
-	elif [ "$gpuopt" = "2" ]; then
-		arg2="env AMD_DEBUG=w32ge,w32ps,w32cs,nohyperz,nofmask glsl_zero_init=true radeonsi_clamp_div_by_zero=true force_integer_tex_nearest=true mesa_glthread=false vblank_mode=0 "
-		if [ "$mesanoerror" = "y" ] || [ "$mesanoerror" = "Y" ]; then
-            arg3="MESA_NO_ERROR=1 "
-        else
-            arg3=""
-        fi
-	else
-		arg2=''
-	fi
-	if [ "$console" = "y" ] || [ "$console" = "Y" ]; then
-		sed -i "s/Terminal=true/Terminal=false/g" Ryujinx.desktop
-	fi
-	if [ "$alias" = "y" ] || [ "$alias" = "Y" ]; then
-		makealias
-	else
-		:
-	fi
 	printf "Installation successful, launch Ryujinx from your app launcher.\n"
 	printf "Also don't forget to show your love on Patreon at https://www.patreon.com/ryujinx\n"
 }
