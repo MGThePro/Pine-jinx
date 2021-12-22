@@ -63,9 +63,9 @@ install() {
 		printf "Extraction failed!\nAborting...\n"
 		exit
 	fi
-	curl -L "https://raw.githubusercontent.com/edisionnano/Pine-jinx/main/Ryujinx.desktop" > Ryujinx.desktop
-	curl -L "https://raw.githubusercontent.com/edisionnano/Pine-jinx/main/Ryujinx.png" > Ryujinx.png
-	curl -L "https://raw.githubusercontent.com/edisionnano/Pine-jinx/main/Ryujinx.xml" > Ryujinx.xml
+	curl -s -L "https://raw.githubusercontent.com/edisionnano/Pine-jinx/testing/Ryujinx.desktop" > Ryujinx.desktop
+	curl -s -L "https://raw.githubusercontent.com/edisionnano/Pine-jinx/testing/Ryujinx.png" > Ryujinx.png
+	curl -s -L "https://raw.githubusercontent.com/edisionnano/Pine-jinx/testing/Ryujinx.xml" > Ryujinx.xml
 	if [ "$noconfirm" = "1" ]; then
 		:
 	else
@@ -73,7 +73,7 @@ install() {
 	fi
 	if [ "$gamemode" = "y" ] || [ "$gamemode" = "Y" ]; then
 		arg1="gamemoderun "
-		curl -L "https://raw.githubusercontent.com/edisionnano/Pine-jinx/testing/gamemode.ini" > /home/${USER}/.config/gamemode.ini
+		curl -s -L "https://raw.githubusercontent.com/edisionnano/Pine-jinx/testing/gamemode.ini" > /home/${USER}/.config/gamemode.ini
 	else
 		arg1=""
 	fi
@@ -89,7 +89,7 @@ install() {
 	else
 		arg2=''
 	fi
-	arg="$arg2$arg3$arg1"
+	arg=$(echo "$arg2$arg3$arg1"|sed 's/ *$//')
 	if [ "$console" = "y" ] || [ "$console" = "Y" ]; then
 		sed -i "s/Terminal=true/Terminal=false/g" Ryujinx.desktop
 	fi
